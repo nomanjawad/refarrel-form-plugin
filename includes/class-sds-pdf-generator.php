@@ -261,6 +261,9 @@ class SDS_PDF_Generator {
         $page_width  = $pdf->getPageWidth();
         $page_height = $pdf->getPageHeight();
 
+        // Disable auto page break so footer text doesn't spill to next page
+        $pdf->SetAutoPageBreak( false, 0 );
+
         // Footer purple bar - full width at bottom
         $bar_height = 20;
         $bar_y = $page_height - $bar_height;
@@ -277,17 +280,19 @@ class SDS_PDF_Generator {
         $pdf->SetTextColor( 255, 255, 255 );
 
         // Line 1: website | email | phone - centered
-        $pdf->SetY( $bar_y + 3 );
+        $pdf->SetXY( 15, $bar_y + 3 );
         $pdf->SetFont( $font, '', 9 );
         $footer_line = $website . '          ' . $email . '          ' . $phone;
-        $pdf->Cell( 0, 5, $footer_line, 0, 1, 'C' );
+        $pdf->Cell( $page_width - 30, 5, $footer_line, 0, 0, 'C' );
 
         // Line 2: ABN - centered
+        $pdf->SetXY( 15, $bar_y + 10 );
         $pdf->SetFont( $font, '', 8 );
-        $pdf->Cell( 0, 5, 'ABN: ' . $abn, 0, 1, 'C' );
+        $pdf->Cell( $page_width - 30, 5, 'ABN: ' . $abn, 0, 0, 'C' );
 
-        // Reset text color
+        // Reset text color and re-enable auto page break
         $pdf->SetTextColor( 0, 0, 0 );
+        $pdf->SetAutoPageBreak( true, 35 );
     }
 
     private function draw_section( $pdf, $font, $rgb, $title, $fields ) {
