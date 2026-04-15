@@ -153,7 +153,7 @@ class SDS_PDF_Generator {
         $this->draw_section_title( $pdf, $font, $rgb, '8. Consent & Privacy' );
 
         $pdf->SetFont( $font, 'I', 9 );
-        $pdf->MultiCell( 0, 6, 'I consent to the sharing of relevant information between the referrer and service provider for the purpose of delivering supports under the NDIS.', 0, 'L' );
+        $pdf->MultiCell( 0, 6, 'I consent to Sydney Disability Support Pty Ltd collecting and using my information to process this referral.', 0, 'L' );
         $pdf->Ln( 4 );
 
         $pdf->SetFont( $font, 'B', 9 );
@@ -231,7 +231,7 @@ class SDS_PDF_Generator {
         $logo_x = 15;
         $logo_y = 6;
         if ( file_exists( $logo_path ) ) {
-            $pdf->Image( $logo_path, $logo_x, $logo_y, 30, 0, '', '', '', true, 300 );
+            $pdf->Image( $logo_path, $logo_x, $logo_y, 42, 0, '', '', '', true, 300 );
         }
 
         // Company name and contact info
@@ -240,12 +240,12 @@ class SDS_PDF_Generator {
         $contact_phone = $this->get_option( 'pdf_contact_phone', '02 8119 5878' );
 
         $pdf->SetY( 8 );
-        $pdf->SetX( 50 );
+        $pdf->SetX( 60 );
         $pdf->SetFont( $font, 'B', 14 );
         $pdf->SetTextColor( $rgb['r'], $rgb['g'], $rgb['b'] );
         $pdf->Cell( 0, 7, $company_name, 0, 1, 'R' );
 
-        $pdf->SetX( 50 );
+        $pdf->SetX( 60 );
         $pdf->SetFont( $font, '', 9 );
         $pdf->SetTextColor( 100, 100, 100 );
         $pdf->Cell( 0, 5, $contact_email . '    ' . $contact_phone, 0, 1, 'R' );
@@ -261,35 +261,30 @@ class SDS_PDF_Generator {
         $page_width  = $pdf->getPageWidth();
         $page_height = $pdf->getPageHeight();
 
-        $footer_y = $page_height - 25;
+        // Footer purple bar - full width at bottom
+        $bar_height = 20;
+        $bar_y = $page_height - $bar_height;
 
-        // Footer separator line
-        $pdf->SetDrawColor( $rgb['r'], $rgb['g'], $rgb['b'] );
-        $pdf->SetLineWidth( 0.5 );
-        $pdf->Line( 15, $footer_y, $page_width - 15, $footer_y );
-
-        // Footer bar
         $pdf->SetFillColor( $rgb['r'], $rgb['g'], $rgb['b'] );
-        $pdf->Rect( 0, $page_height - 18, $page_width, 18, 'F' );
+        $pdf->Rect( 0, $bar_y, $page_width, $bar_height, 'F' );
 
-        // Footer text
+        // Footer text - all white, centered on the purple bar
         $website = $this->get_option( 'pdf_footer_website', 'www.sydneydisabilitysupport.com' );
         $email   = $this->get_option( 'pdf_footer_email', 'info@sydneydisabilitysupport.com' );
         $phone   = $this->get_option( 'pdf_footer_phone', '02 8119 5878' );
         $abn     = $this->get_option( 'pdf_footer_abn', '93 650 405 057' );
 
-        $pdf->SetY( $footer_y + 2 );
-        $pdf->SetFont( $font, '', 8 );
-        $pdf->SetTextColor( 100, 100, 100 );
-        $pdf->Cell( 0, 4, 'ABN: ' . $abn, 0, 1, 'C' );
-
-        // White text on purple bar
-        $pdf->SetY( $page_height - 15 );
-        $pdf->SetFont( $font, '', 9 );
         $pdf->SetTextColor( 255, 255, 255 );
-        $pdf->Cell( 60, 5, $website, 0, 0, 'L' );
-        $pdf->Cell( 0, 5, $email, 0, 0, 'C' );
-        $pdf->Cell( 60, 5, $phone, 0, 1, 'R' );
+
+        // Line 1: website | email | phone - centered
+        $pdf->SetY( $bar_y + 3 );
+        $pdf->SetFont( $font, '', 9 );
+        $footer_line = $website . '          ' . $email . '          ' . $phone;
+        $pdf->Cell( 0, 5, $footer_line, 0, 1, 'C' );
+
+        // Line 2: ABN - centered
+        $pdf->SetFont( $font, '', 8 );
+        $pdf->Cell( 0, 5, 'ABN: ' . $abn, 0, 1, 'C' );
 
         // Reset text color
         $pdf->SetTextColor( 0, 0, 0 );

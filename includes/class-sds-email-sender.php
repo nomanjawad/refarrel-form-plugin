@@ -22,7 +22,8 @@ class SDS_Email_Sender {
         $from_email = $this->get_option( 'from_email', get_option( 'admin_email' ) );
         $from_name  = $this->get_option( 'from_name', 'Sydney Disability Support' );
         $admin_email     = $this->get_option( 'admin_email', get_option( 'admin_email' ) );
-        $recipient_email = $this->get_option( 'recipient_email', '' );
+        // Recipient is the participant email from the form
+        $recipient_email = isset( $form_data['email'] ) && is_email( $form_data['email'] ) ? $form_data['email'] : '';
 
         $participant_name = isset( $form_data['full_name'] ) ? $form_data['full_name'] : 'Unknown';
         $subject = 'New NDIS Referral - ' . $participant_name;
