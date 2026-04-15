@@ -4,8 +4,8 @@
  * Plugin URI: https://sydneydisabilitysupport.com
  * Description: NDIS Referral Form for Sydney Disability Support with PDF generation, email notifications, and admin settings.
  * Version: 1.0.0
- * Author: Sydney Disability Support
- * Author URI: https://sydneydisabilitysupport.com
+ * Author: Noman E Jawad
+ * Author URI: https://nomanjawad.vercel.app/
  * License: GPL-2.0+
  * Text Domain: sds-referral-form
  */
