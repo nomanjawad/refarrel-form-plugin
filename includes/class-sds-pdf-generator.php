@@ -231,7 +231,7 @@ class SDS_PDF_Generator {
         $logo_x = 15;
         $logo_y = 5;
         if ( file_exists( $logo_path ) ) {
-            $pdf->Image( $logo_path, $logo_x, $logo_y, 35, 18, '', '', '', true, 300 );
+            $pdf->Image( $logo_path, $logo_x, $logo_y, 0, 18, '', '', '', true, 300 );
         }
 
         // Company name and contact info
