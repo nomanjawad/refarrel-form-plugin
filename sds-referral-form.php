@@ -3,7 +3,7 @@
  * Plugin Name: SDS Referral Form
  * Plugin URI: https://sydneydisabilitysupport.com
  * Description: NDIS Referral Form for Sydney Disability Support with PDF generation, email notifications, and admin settings.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Noman E Jawad
  * Author URI: https://nomanjawad.vercel.app/
  * License: GPL-2.0+
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SDS_VERSION', '1.0.4' );
+define( 'SDS_VERSION', '1.0.5' );
 define( 'SDS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SDS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SDS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

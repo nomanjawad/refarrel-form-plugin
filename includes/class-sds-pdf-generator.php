@@ -46,7 +46,7 @@ class SDS_PDF_Generator {
 
         // Set margins
         $pdf->SetMargins( 15, 15, 15 );
-        $pdf->SetAutoPageBreak( true, 35 ); // Leave space for footer
+        $pdf->SetAutoPageBreak( true, 25 ); // Leave space for footer
 
         // Set font
         $pdf->SetFont( $font, '', 10 );
@@ -58,7 +58,7 @@ class SDS_PDF_Generator {
         $this->draw_header( $pdf, $rgb, $font );
 
         // Title
-        $pdf->SetY( 48 );
+        $pdf->SetY( 33 );
         $pdf->SetFont( $font, 'B', 18 );
         $pdf->SetTextColor( $rgb['r'], $rgb['g'], $rgb['b'] );
         $pdf->Cell( 0, 10, 'SDS REFERRAL FORM', 0, 1, 'L' );
@@ -97,7 +97,7 @@ class SDS_PDF_Generator {
         if ( $pdf->GetY() > 220 ) {
             $pdf->AddPage();
             $this->draw_header( $pdf, $rgb, $font );
-            $pdf->SetY( 48 );
+            $pdf->SetY( 33 );
         }
 
         // Section 4: NDIS Plan Details
@@ -229,9 +229,9 @@ class SDS_PDF_Generator {
         }
 
         $logo_x = 15;
-        $logo_y = 6;
+        $logo_y = 5;
         if ( file_exists( $logo_path ) ) {
-            $pdf->Image( $logo_path, $logo_x, $logo_y, 42, 0, '', '', '', true, 300 );
+            $pdf->Image( $logo_path, $logo_x, $logo_y, 35, 18, '', '', '', true, 300 );
         }
 
         // Company name and contact info
@@ -292,7 +292,7 @@ class SDS_PDF_Generator {
 
         // Reset text color and re-enable auto page break
         $pdf->SetTextColor( 0, 0, 0 );
-        $pdf->SetAutoPageBreak( true, 35 );
+        $pdf->SetAutoPageBreak( true, 25 );
     }
 
     private function draw_section( $pdf, $font, $rgb, $title, $fields ) {
@@ -327,10 +327,10 @@ class SDS_PDF_Generator {
     }
 
     private function check_page_space( $pdf, $needed, $rgb, $font ) {
-        if ( $pdf->GetY() + $needed > ( $pdf->getPageHeight() - 35 ) ) {
+        if ( $pdf->GetY() + $needed > ( $pdf->getPageHeight() - 25 ) ) {
             $pdf->AddPage();
             $this->draw_header( $pdf, $rgb, $font );
-            $pdf->SetY( 48 );
+            $pdf->SetY( 33 );
         }
     }
 
