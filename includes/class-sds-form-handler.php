@@ -40,30 +40,46 @@ class SDS_Form_Handler {
             wp_send_json_error( array( 'message' => 'Please fill in all required fields: ' . implode( ', ', $errors ) ) );
         }
 
-        // Generate PDF
-        $pdf_generator = new SDS_PDF_Generator();
-        $pdf_path = $pdf_generator->generate( $form_data );
+        // Wrap in try/catch to capture PHP errors
+        try {
+            // Generate PDF
+            $pdf_generator = new SDS_PDF_Generator();
+            $pdf_path = $pdf_generator->generate( $form_data );
 
-        if ( ! $pdf_path ) {
-            wp_send_json_error( array( 'message' => 'Failed to generate PDF. Please try again.' ) );
+            if ( ! $pdf_path ) {
+                wp_send_json_error( array( 'message' => 'Failed to generate PDF. Please try again.' ) );
+            }
+
+            // Send emails (don't let email failure block the response)
+            try {
+                $email_sender = new SDS_Email_Sender();
+                $email_sender->send( $form_data, $pdf_path );
+            } catch ( \Exception $email_err ) {
+                // Email failed but PDF was generated - continue
+            }
+
+            // Read PDF for base64 response (for browser download)
+            $pdf_content = file_get_contents( $pdf_path );
+            if ( ! $pdf_content ) {
+                wp_send_json_error( array( 'message' => 'PDF was generated but could not be read.' ) );
+            }
+
+            $pdf_base64 = base64_encode( $pdf_content );
+
+            $participant_name = sanitize_file_name( $form_data['full_name'] );
+            $filename = 'SDS-Referral-' . $participant_name . '-' . date( 'Y-m-d' ) . '.pdf';
+
+            wp_send_json_success( array(
+                'message'    => 'Referral submitted successfully.',
+                'pdf_base64' => $pdf_base64,
+                'filename'   => $filename,
+            ) );
+
+        } catch ( \Exception $e ) {
+            wp_send_json_error( array( 'message' => 'Server error: ' . $e->getMessage() ) );
+        } catch ( \Error $e ) {
+            wp_send_json_error( array( 'message' => 'Server error: ' . $e->getMessage() ) );
         }
-
-        // Send emails
-        $email_sender = new SDS_Email_Sender();
-        $email_sender->send( $form_data, $pdf_path );
-
-        // Read PDF for base64 response (for browser download)
-        $pdf_content = file_get_contents( $pdf_path );
-        $pdf_base64  = base64_encode( $pdf_content );
-
-        $participant_name = sanitize_file_name( $form_data['full_name'] );
-        $filename = 'SDS-Referral-' . $participant_name . '-' . date( 'Y-m-d' ) . '.pdf';
-
-        wp_send_json_success( array(
-            'message'    => 'Referral submitted successfully.',
-            'pdf_base64' => $pdf_base64,
-            'filename'   => $filename,
-        ) );
     }
 
     private function sanitize_form_data( $post ) {

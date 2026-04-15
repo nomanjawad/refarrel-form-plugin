@@ -285,6 +285,11 @@
                         msg += 'The form data is too large. Please try clearing and redrawing your signature.';
                     } else if (xhr.status === 0) {
                         msg += 'Could not reach the server. Please check your connection.';
+                    } else if (status === 'parsererror') {
+                        // Server returned 200 but response wasn't valid JSON (PHP error/warning)
+                        var raw = xhr.responseText || '';
+                        if (raw.length > 300) raw = raw.substring(0, 300);
+                        msg += 'The server returned an unexpected response. Details: ' + raw;
                     } else {
                         msg += 'Server error (' + xhr.status + '). Please try again or contact support.';
                     }
