@@ -13,8 +13,9 @@ class SDS_Form {
         // Enqueue assets only when shortcode is used
         $this->enqueue_assets();
 
-        $options       = get_option( 'sds_referral_options', array() );
-        $primary_color = isset( $options['primary_color'] ) ? $options['primary_color'] : '#5B2D8E';
+        $options            = get_option( 'sds_referral_options', array() );
+        $primary_color      = isset( $options['primary_color'] ) ? $options['primary_color'] : '#5B2D8E';
+        $privacy_policy_url = isset( $options['privacy_policy_url'] ) ? $options['privacy_policy_url'] : '';
 
         ob_start();
         ?>

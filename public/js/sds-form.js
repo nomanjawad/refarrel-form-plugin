@@ -6,7 +6,6 @@
     var signaturePad = null;
 
     $(document).ready(function() {
-        initSignaturePad();
         bindNavigation();
         bindOtherService();
         bindFormSubmit();
@@ -27,27 +26,44 @@
     }
 
     function initSignaturePad() {
+        if (signaturePad) return; // Already initialized
+
         var canvas = document.getElementById('sds-signature-pad');
         if (!canvas) return;
+
+        // Set explicit canvas dimensions from the visible container
+        var wrapper = canvas.parentElement;
+        var wrapperWidth = wrapper.offsetWidth || 500;
+        var canvasHeight = 200;
+
+        canvas.width = wrapperWidth;
+        canvas.height = canvasHeight;
+        canvas.style.width = wrapperWidth + 'px';
+        canvas.style.height = canvasHeight + 'px';
 
         signaturePad = new SignaturePad(canvas, {
             backgroundColor: 'rgb(250, 250, 250)',
             penColor: 'rgb(0, 0, 0)'
         });
 
-        // Resize canvas for high-DPI screens
+        // Fill background immediately so it's not transparent
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgb(250, 250, 250)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Resize canvas on window resize
         function resizeCanvas() {
+            var ww = wrapper.offsetWidth || 500;
             var ratio = Math.max(window.devicePixelRatio || 1, 1);
-            var rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * ratio;
-            canvas.height = rect.height * ratio;
+            canvas.width = ww * ratio;
+            canvas.height = canvasHeight * ratio;
+            canvas.style.width = ww + 'px';
+            canvas.style.height = canvasHeight + 'px';
             canvas.getContext('2d').scale(ratio, ratio);
             signaturePad.clear();
         }
 
         window.addEventListener('resize', resizeCanvas);
-        // Delay initial resize to ensure container is rendered
-        setTimeout(resizeCanvas, 100);
 
         // Clear signature button
         $('.sds-clear-signature').on('click', function() {
@@ -83,7 +99,12 @@
         // Hide current step
         $('.sds-step[data-step="' + currentStep + '"]').fadeOut(200, function() {
             // Show target step
-            $('.sds-step[data-step="' + step + '"]').fadeIn(200);
+            $('.sds-step[data-step="' + step + '"]').fadeIn(200, function() {
+                // Initialize signature pad when step 8 becomes visible
+                if (step === 8) {
+                    initSignaturePad();
+                }
+            });
         });
 
         // Update progress bar

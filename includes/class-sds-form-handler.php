@@ -156,8 +156,8 @@ class SDS_Form_Handler {
             }
         }
 
-        // Consent agreement
-        $data['consent_agree'] = isset( $post['consent_agree'] ) && $post['consent_agree'] === 'yes' ? 'yes' : '';
+        // Consent privacy agreement
+        $data['consent_privacy'] = isset( $post['consent_privacy'] ) && $post['consent_privacy'] === 'yes' ? 'yes' : '';
 
         return $data;
     }
@@ -210,8 +210,8 @@ class SDS_Form_Handler {
         if ( empty( $data['signature_data'] ) ) {
             $errors[] = 'Signature';
         }
-        if ( $data['consent_agree'] !== 'yes' ) {
-            $errors[] = 'Consent Agreement';
+        if ( $data['consent_privacy'] !== 'yes' ) {
+            $errors[] = 'Privacy Policy Agreement';
         }
 
         return $errors;

@@ -78,6 +78,11 @@ class SDS_Admin_Settings {
         add_settings_field( 'primary_color', 'Primary Color', array( $this, 'field_color' ), 'sds-referral-settings', 'sds_appearance_section', array(
             'field' => 'primary_color',
         ) );
+        add_settings_field( 'privacy_policy_url', 'Privacy Policy URL', array( $this, 'field_text' ), 'sds-referral-settings', 'sds_appearance_section', array(
+            'field' => 'privacy_policy_url',
+            'type'  => 'url',
+            'desc'  => 'Link to your Privacy Policy page. This is shown in the consent checkbox on the last step of the form.',
+        ) );
 
         // PDF Header Section
         add_settings_section( 'sds_pdf_header_section', 'PDF Header', array( $this, 'section_pdf_header_cb' ), 'sds-referral-settings' );
@@ -247,6 +252,9 @@ class SDS_Admin_Settings {
         foreach ( $text_fields as $field ) {
             $sanitized[ $field ] = isset( $input[ $field ] ) ? sanitize_text_field( $input[ $field ] ) : '';
         }
+
+        // Privacy Policy URL
+        $sanitized['privacy_policy_url'] = isset( $input['privacy_policy_url'] ) ? esc_url_raw( $input['privacy_policy_url'] ) : '';
 
         // Color
         $sanitized['primary_color'] = isset( $input['primary_color'] ) && preg_match( '/^#[a-fA-F0-9]{6}$/', $input['primary_color'] ) ? $input['primary_color'] : '#5B2D8E';
