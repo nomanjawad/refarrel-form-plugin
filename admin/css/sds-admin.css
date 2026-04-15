@@ -1,0 +1,62 @@
+.sds-admin-wrap {
+    max-width: 900px;
+}
+
+.sds-admin-header {
+    background: #fff;
+    border-left: 4px solid #5B2D8E;
+    padding: 12px 20px;
+    margin: 20px 0;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.sds-admin-header code {
+    background: #f0f0f0;
+    padding: 2px 8px;
+    font-size: 14px;
+    color: #5B2D8E;
+}
+
+.sds-settings-tabs .nav-tab-wrapper {
+    margin-bottom: 0;
+}
+
+.sds-settings-tabs .nav-tab {
+    cursor: pointer;
+}
+
+.sds-settings-tabs .nav-tab-active {
+    background: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.sds-tab-content {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #c3c4c7;
+    border-top: none;
+}
+
+.sds-media-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sds-media-preview {
+    min-width: 60px;
+}
+
+.sds-media-preview img {
+    max-width: 200px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+    background: #fff;
+}
+
+.form-table td textarea.code {
+    font-family: Consolas, Monaco, monospace;
+}

@@ -1,0 +1,436 @@
+/* SDS Referral Form Styles */
+#sds-referral-form-wrapper {
+    --sds-primary: #5B2D8E;
+    --sds-primary-light: color-mix(in srgb, var(--sds-primary) 15%, white);
+    --sds-primary-dark: color-mix(in srgb, var(--sds-primary) 80%, black);
+    --sds-text: #333;
+    --sds-border: #ddd;
+    --sds-bg: #fff;
+    --sds-error: #dc3545;
+    --sds-success: #28a745;
+
+    max-width: 800px;
+    margin: 30px auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+    color: var(--sds-text);
+}
+
+/* Progress Bar */
+.sds-progress-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    overflow-x: auto;
+}
+
+.sds-progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    text-align: center;
+    min-width: 70px;
+}
+
+.sds-progress-step::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: -50%;
+    width: 100%;
+    height: 2px;
+    background: var(--sds-border);
+    z-index: 0;
+}
+
+.sds-progress-step:first-child::before {
+    display: none;
+}
+
+.sds-progress-step.active::before,
+.sds-progress-step.completed::before {
+    background: var(--sds-primary);
+}
+
+.sds-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--sds-border);
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.sds-progress-step.active .sds-step-num,
+.sds-progress-step.completed .sds-step-num {
+    background: var(--sds-primary);
+    color: #fff;
+}
+
+.sds-step-label {
+    font-size: 11px;
+    margin-top: 6px;
+    color: #999;
+    white-space: nowrap;
+}
+
+.sds-progress-step.active .sds-step-label {
+    color: var(--sds-primary);
+    font-weight: 600;
+}
+
+.sds-progress-step.completed .sds-step-label {
+    color: var(--sds-primary);
+}
+
+/* Form Container */
+#sds-referral-form {
+    background: var(--sds-bg);
+    border: 1px solid var(--sds-border);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Step Titles */
+.sds-step-title {
+    color: var(--sds-primary);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--sds-primary);
+}
+
+.sds-step-desc {
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 20px 0;
+    font-style: italic;
+}
+
+/* Field Layout */
+.sds-field-row {
+    margin-bottom: 18px;
+}
+
+.sds-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.sds-field label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--sds-text);
+}
+
+.sds-field label .required {
+    color: var(--sds-error);
+}
+
+.sds-field input[type="text"],
+.sds-field input[type="email"],
+.sds-field input[type="tel"],
+.sds-field input[type="date"],
+.sds-field textarea,
+.sds-field select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--sds-border);
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.sds-field input:focus,
+.sds-field textarea:focus,
+.sds-field select:focus {
+    outline: none;
+    border-color: var(--sds-primary);
+    box-shadow: 0 0 0 3px var(--sds-primary-light);
+}
+
+.sds-field input.sds-invalid,
+.sds-field textarea.sds-invalid,
+.sds-field select.sds-invalid {
+    border-color: var(--sds-error);
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+.sds-field-error {
+    color: var(--sds-error);
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+}
+
+.sds-field input.sds-invalid + .sds-field-error,
+.sds-field textarea.sds-invalid + .sds-field-error {
+    display: block;
+}
+
+/* Checkbox & Radio Groups */
+.sds-checkbox-group,
+.sds-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.sds-services-list {
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sds-checkbox,
+.sds-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sds-checkbox input,
+.sds-radio input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--sds-primary);
+    cursor: pointer;
+}
+
+/* Consent */
+.sds-consent-text {
+    background: var(--sds-primary-light);
+    border-left: 4px solid var(--sds-primary);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Signature Pad */
+.sds-signature-wrapper {
+    border: 2px solid var(--sds-border);
+    border-radius: 6px;
+    background: #fafafa;
+    display: inline-block;
+    max-width: 100%;
+}
+
+#sds-signature-pad {
+    display: block;
+    max-width: 100%;
+    touch-action: none;
+}
+
+.sds-clear-signature {
+    margin-top: 8px;
+}
+
+/* Buttons */
+.sds-btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.sds-btn .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+}
+
+.sds-next,
+.sds-submit {
+    background: var(--sds-primary);
+    color: #fff;
+}
+
+.sds-next:hover,
+.sds-submit:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.sds-prev {
+    background: #f0f0f0;
+    color: var(--sds-text);
+}
+
+.sds-prev:hover {
+    background: #e0e0e0;
+}
+
+.sds-btn-small {
+    padding: 6px 14px;
+    border: 1px solid var(--sds-border);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--sds-text);
+    font-family: inherit;
+}
+
+.sds-btn-small:hover {
+    background: #f5f5f5;
+}
+
+/* Navigation */
+.sds-form-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--sds-border);
+}
+
+/* Loading */
+#sds-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+.sds-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--sds-border);
+    border-top-color: var(--sds-primary);
+    border-radius: 50%;
+    animation: sds-spin 0.8s linear infinite;
+}
+
+@keyframes sds-spin {
+    to { transform: rotate(360deg); }
+}
+
+#sds-loading p {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--sds-text);
+}
+
+/* Success */
+#sds-form-success {
+    text-align: center;
+    padding: 60px 30px;
+    background: var(--sds-bg);
+    border: 1px solid var(--sds-border);
+    border-radius: 8px;
+}
+
+.sds-success-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--sds-success);
+    color: #fff;
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+#sds-form-success h3 {
+    color: var(--sds-success);
+    font-size: 24px;
+    margin: 0 0 10px;
+}
+
+#sds-form-success p {
+    color: #666;
+    font-size: 16px;
+    margin: 0 0 30px;
+}
+
+.sds-new-referral {
+    background: var(--sds-primary) !important;
+    color: #fff !important;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #sds-referral-form-wrapper {
+        margin: 15px;
+    }
+
+    #sds-referral-form {
+        padding: 20px 16px;
+    }
+
+    .sds-two-col {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .sds-progress-bar {
+        gap: 4px;
+    }
+
+    .sds-step-label {
+        font-size: 9px;
+    }
+
+    .sds-step-num {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+    }
+
+    .sds-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .sds-step-title {
+        font-size: 18px;
+    }
+
+    .sds-signature-wrapper {
+        width: 100%;
+    }
+
+    #sds-signature-pad {
+        width: 100%;
+        height: 150px;
+    }
+}
