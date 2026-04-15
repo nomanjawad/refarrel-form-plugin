@@ -11,6 +11,7 @@
         bindFormSubmit();
         bindNewReferral();
         setDefaultDates();
+        bindDateFields();
     });
 
     function setDefaultDates() {
@@ -232,9 +233,18 @@
                 }
             }
 
-            // Capture signature data
+            // Capture signature data - use JPEG at lower quality to reduce size
             if (signaturePad && !signaturePad.isEmpty()) {
-                $('#sds_signature_data').val(signaturePad.toDataURL('image/png'));
+                var sigCanvas = document.getElementById('sds-signature-pad');
+                // Create a temp canvas with white background for JPEG
+                var tmpCanvas = document.createElement('canvas');
+                tmpCanvas.width = sigCanvas.width;
+                tmpCanvas.height = sigCanvas.height;
+                var tmpCtx = tmpCanvas.getContext('2d');
+                tmpCtx.fillStyle = '#fafafa';
+                tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+                tmpCtx.drawImage(sigCanvas, 0, 0);
+                $('#sds_signature_data').val(tmpCanvas.toDataURL('image/jpeg', 0.5));
             }
 
             // Show loading
@@ -247,6 +257,7 @@
                 type: 'POST',
                 data: formData,
                 dataType: 'json',
+                timeout: 120000, // 2 minute timeout for PDF generation
                 success: function(response) {
                     $('#sds-loading').hide();
 
@@ -267,7 +278,17 @@
                 },
                 error: function(xhr, status, error) {
                     $('#sds-loading').hide();
-                    alert('A network error occurred. Please check your connection and try again.');
+                    var msg = 'An error occurred. ';
+                    if (status === 'timeout') {
+                        msg += 'The request timed out. Please try again.';
+                    } else if (xhr.status === 413) {
+                        msg += 'The form data is too large. Please try clearing and redrawing your signature.';
+                    } else if (xhr.status === 0) {
+                        msg += 'Could not reach the server. Please check your connection.';
+                    } else {
+                        msg += 'Server error (' + xhr.status + '). Please try again or contact support.';
+                    }
+                    alert(msg);
                 }
             });
         });
@@ -323,6 +344,15 @@
             $('html, body').animate({
                 scrollTop: $('#sds-referral-form-wrapper').offset().top - 20
             }, 300);
+        });
+    }
+
+    function bindDateFields() {
+        // Open native date picker when clicking anywhere on the field
+        $(document).on('click', '#sds-referral-form input[type="date"]', function() {
+            if (typeof this.showPicker === 'function') {
+                try { this.showPicker(); } catch(e) {}
+            }
         });
     }
 

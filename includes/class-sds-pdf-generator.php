@@ -166,16 +166,26 @@ class SDS_PDF_Generator {
         $pdf->Cell( 55, 7, 'Signature:', 0, 0 );
 
         $sig_data = $this->get_data( 'signature_data' );
-        if ( $sig_data && strpos( $sig_data, 'data:image/png;base64,' ) === 0 ) {
+        $sig_prefix = '';
+        $sig_ext    = '';
+        if ( strpos( $sig_data, 'data:image/png;base64,' ) === 0 ) {
+            $sig_prefix = 'data:image/png;base64,';
+            $sig_ext    = 'png';
+        } elseif ( strpos( $sig_data, 'data:image/jpeg;base64,' ) === 0 ) {
+            $sig_prefix = 'data:image/jpeg;base64,';
+            $sig_ext    = 'jpg';
+        }
+
+        if ( $sig_data && $sig_prefix ) {
             $sig_y = $pdf->GetY();
             $sig_x = $pdf->GetX();
-            $base64 = substr( $sig_data, strlen( 'data:image/png;base64,' ) );
+            $base64 = substr( $sig_data, strlen( $sig_prefix ) );
             $img_data = base64_decode( $base64 );
 
             if ( $img_data ) {
-                $tmp_file = tempnam( sys_get_temp_dir(), 'sds_sig_' ) . '.png';
+                $tmp_file = tempnam( sys_get_temp_dir(), 'sds_sig_' ) . '.' . $sig_ext;
                 file_put_contents( $tmp_file, $img_data );
-                $pdf->Image( $tmp_file, $sig_x, $sig_y, 60, 25, 'PNG' );
+                $pdf->Image( $tmp_file, $sig_x, $sig_y, 60, 25 );
                 wp_delete_file( $tmp_file );
                 $pdf->SetY( $sig_y + 27 );
             }

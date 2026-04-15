@@ -142,13 +142,22 @@ class SDS_Form_Handler {
             }
         }
 
-        // Signature data - validate format
+        // Signature data - validate format (accepts PNG or JPEG)
         $data['signature_data'] = '';
         if ( isset( $post['signature_data'] ) ) {
             $sig = wp_unslash( $post['signature_data'] );
+            $valid_prefix = false;
+            $base64_part  = '';
+
             if ( strpos( $sig, 'data:image/png;base64,' ) === 0 ) {
-                $base64_part = substr( $sig, strlen( 'data:image/png;base64,' ) );
-                // Validate it's valid base64 and not too large (500KB decoded)
+                $base64_part  = substr( $sig, strlen( 'data:image/png;base64,' ) );
+                $valid_prefix = true;
+            } elseif ( strpos( $sig, 'data:image/jpeg;base64,' ) === 0 ) {
+                $base64_part  = substr( $sig, strlen( 'data:image/jpeg;base64,' ) );
+                $valid_prefix = true;
+            }
+
+            if ( $valid_prefix && $base64_part ) {
                 $decoded = base64_decode( $base64_part, true );
                 if ( $decoded !== false && strlen( $decoded ) < 512000 ) {
                     $data['signature_data'] = $sig;

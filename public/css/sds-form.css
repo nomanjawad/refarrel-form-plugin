@@ -60,8 +60,8 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: var(--sds-border);
-    color: #999;
+    background: #fff;
+    color: #000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -81,12 +81,12 @@
 .sds-step-label {
     font-size: 11px;
     margin-top: 6px;
-    color: #999;
+    color: #fff;
     white-space: nowrap;
 }
 
 .sds-progress-step.active .sds-step-label {
-    color: var(--sds-primary);
+    color: #fff;
     font-weight: 600;
 }
 
