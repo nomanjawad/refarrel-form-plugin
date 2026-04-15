@@ -91,7 +91,7 @@
 }
 
 .sds-progress-step.completed .sds-step-label {
-    color: var(--sds-primary);
+    color: #fff;
 }
 
 /* Form Container */

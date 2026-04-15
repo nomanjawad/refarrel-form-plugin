@@ -158,28 +158,8 @@ class SDS_Form_Handler {
             }
         }
 
-        // Signature data - validate format (accepts PNG or JPEG)
-        $data['signature_data'] = '';
-        if ( isset( $post['signature_data'] ) ) {
-            $sig = wp_unslash( $post['signature_data'] );
-            $valid_prefix = false;
-            $base64_part  = '';
-
-            if ( strpos( $sig, 'data:image/png;base64,' ) === 0 ) {
-                $base64_part  = substr( $sig, strlen( 'data:image/png;base64,' ) );
-                $valid_prefix = true;
-            } elseif ( strpos( $sig, 'data:image/jpeg;base64,' ) === 0 ) {
-                $base64_part  = substr( $sig, strlen( 'data:image/jpeg;base64,' ) );
-                $valid_prefix = true;
-            }
-
-            if ( $valid_prefix && $base64_part ) {
-                $decoded = base64_decode( $base64_part, true );
-                if ( $decoded !== false && strlen( $decoded ) < 512000 ) {
-                    $data['signature_data'] = $sig;
-                }
-            }
-        }
+        // Signature text
+        $data['signature_text'] = isset( $post['signature_text'] ) ? sanitize_text_field( wp_unslash( $post['signature_text'] ) ) : '';
 
         // Consent privacy agreement
         $data['consent_privacy'] = isset( $post['consent_privacy'] ) && $post['consent_privacy'] === 'yes' ? 'yes' : '';
@@ -232,7 +212,7 @@ class SDS_Form_Handler {
         if ( empty( $data['consent_date'] ) ) {
             $errors[] = 'Consent Date';
         }
-        if ( empty( $data['signature_data'] ) ) {
+        if ( empty( $data['signature_text'] ) ) {
             $errors[] = 'Signature';
         }
         if ( $data['consent_privacy'] !== 'yes' ) {

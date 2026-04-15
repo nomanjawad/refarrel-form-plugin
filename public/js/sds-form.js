@@ -187,15 +187,7 @@
             }
         });
 
-        // Special: signature validation on step 8
-        if (step === 8 && signaturePad) {
-            if (signaturePad.isEmpty()) {
-                $('#sds-signature-error').show();
-                isValid = false;
-            } else {
-                $('#sds-signature-error').hide();
-            }
-        }
+        // Signature is a text field now - validated by required attribute above
 
         // Scroll to first error
         if (!isValid) {
@@ -233,19 +225,7 @@
                 }
             }
 
-            // Capture signature data - use JPEG at lower quality to reduce size
-            if (signaturePad && !signaturePad.isEmpty()) {
-                var sigCanvas = document.getElementById('sds-signature-pad');
-                // Create a temp canvas with white background for JPEG
-                var tmpCanvas = document.createElement('canvas');
-                tmpCanvas.width = sigCanvas.width;
-                tmpCanvas.height = sigCanvas.height;
-                var tmpCtx = tmpCanvas.getContext('2d');
-                tmpCtx.fillStyle = '#fafafa';
-                tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
-                tmpCtx.drawImage(sigCanvas, 0, 0);
-                $('#sds_signature_data').val(tmpCanvas.toDataURL('image/jpeg', 0.5));
-            }
+            // Signature is now a text field - no canvas processing needed
 
             // Show loading
             $('#sds-loading').show();

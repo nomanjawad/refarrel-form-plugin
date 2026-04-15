@@ -14,13 +14,8 @@
 
 <div class="sds-field-row">
     <div class="sds-field">
-        <label>Signature <span class="required">*</span></label>
-        <div class="sds-signature-wrapper">
-            <canvas id="sds-signature-pad"></canvas>
-            <input type="hidden" name="signature_data" id="sds_signature_data" />
-        </div>
-        <button type="button" class="sds-btn-small sds-clear-signature">Clear Signature</button>
-        <p class="sds-field-error" id="sds-signature-error" style="display:none;">Please provide a signature.</p>
+        <label for="sds_signature_text">Signature (Type your full name) <span class="required">*</span></label>
+        <input type="text" id="sds_signature_text" name="signature_text" required placeholder="Type your full name as signature" />
     </div>
 </div>
 
