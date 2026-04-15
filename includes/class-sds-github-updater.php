@@ -9,8 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Checks a public GitHub repository for new releases and enables
  * one-click updates from the WordPress admin Plugins page.
  *
- * Usage: Set your GitHub repo slug (owner/repo) in the constructor.
- * Tag releases as "v1.0.1" etc. The tag version is compared against SDS_VERSION.
+ * Tag releases as "v1.0.3" etc. The tag version (stripped of "v")
+ * is compared against the plugin header Version.
  */
 class SDS_GitHub_Updater {
 
@@ -22,7 +22,7 @@ class SDS_GitHub_Updater {
     private $github_response;
 
     /**
-     * @param string $plugin_file  Plugin basename (e.g. 'sds-referral-form/sds-referral-form.php').
+     * @param string $plugin_file  Plugin basename (e.g. 'rafarrel-form/sds-referral-form.php').
      * @param string $github_repo  GitHub repo in "owner/repo" format.
      */
     public function __construct( $plugin_file, $github_repo ) {
@@ -34,10 +34,17 @@ class SDS_GitHub_Updater {
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
         add_filter( 'plugins_api', array( $this, 'plugin_info' ), 20, 3 );
         add_filter( 'upgrader_post_install', array( $this, 'after_install' ), 10, 3 );
+
+        // Clear cached release data when plugin version changes (fresh install/manual update)
+        $cached_version = get_option( 'sds_updater_current_version', '' );
+        if ( $cached_version !== SDS_VERSION ) {
+            delete_transient( 'sds_github_release_' . md5( $this->github_repo ) );
+            update_option( 'sds_updater_current_version', SDS_VERSION );
+        }
     }
 
     /**
-     * Fetch the latest release from GitHub (cached for 6 hours).
+     * Fetch the latest release from GitHub (cached for 3 hours).
      */
     private function get_github_release() {
         if ( ! empty( $this->github_response ) ) {
@@ -52,14 +59,22 @@ class SDS_GitHub_Updater {
             return $cached;
         }
 
-        $response = wp_remote_get( $this->github_api_url . '/releases/latest', array(
+        $url = $this->github_api_url . '/releases/latest';
+
+        $response = wp_remote_get( $url, array(
             'headers' => array(
-                'Accept' => 'application/vnd.github.v3+json',
+                'Accept'     => 'application/vnd.github.v3+json',
+                'User-Agent' => 'SDS-Referral-Form-Plugin/' . SDS_VERSION,
             ),
-            'timeout' => 10,
+            'timeout' => 15,
         ) );
 
-        if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
+        if ( is_wp_error( $response ) ) {
+            return false;
+        }
+
+        $code = wp_remote_retrieve_response_code( $response );
+        if ( $code !== 200 ) {
             return false;
         }
 
@@ -70,7 +85,7 @@ class SDS_GitHub_Updater {
         }
 
         $this->github_response = $release;
-        set_transient( $transient_key, $release, 6 * HOUR_IN_SECONDS );
+        set_transient( $transient_key, $release, 3 * HOUR_IN_SECONDS );
 
         return $release;
     }
@@ -80,6 +95,9 @@ class SDS_GitHub_Updater {
      */
     private function get_plugin_data() {
         if ( empty( $this->plugin_data ) ) {
+            if ( ! function_exists( 'get_plugin_data' ) ) {
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            }
             $this->plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $this->plugin_file );
         }
         return $this->plugin_data;
@@ -89,23 +107,18 @@ class SDS_GitHub_Updater {
      * Compare versions and inject update into WP transient.
      */
     public function check_update( $transient ) {
-        if ( empty( $transient->checked ) ) {
-            return $transient;
-        }
-
         $release = $this->get_github_release();
         if ( ! $release ) {
             return $transient;
         }
 
         $remote_version = ltrim( $release['tag_name'], 'vV' );
-        $plugin_data    = $this->get_plugin_data();
-        $local_version  = $plugin_data['Version'];
+        $local_version  = SDS_VERSION;
 
         if ( version_compare( $remote_version, $local_version, '>' ) ) {
             $download_url = $release['zipball_url'];
 
-            // Prefer the uploaded asset if available (named like sds-referral-form.zip)
+            // Prefer an uploaded .zip asset if available
             if ( ! empty( $release['assets'] ) ) {
                 foreach ( $release['assets'] as $asset ) {
                     if ( substr( $asset['name'], -4 ) === '.zip' ) {
@@ -115,7 +128,7 @@ class SDS_GitHub_Updater {
                 }
             }
 
-            $transient->response[ $this->plugin_file ] = (object) array(
+            $item = (object) array(
                 'slug'        => $this->slug,
                 'plugin'      => $this->plugin_file,
                 'new_version' => $remote_version,
@@ -123,7 +136,11 @@ class SDS_GitHub_Updater {
                 'package'     => $download_url,
                 'icons'       => array(),
                 'banners'     => array(),
+                'tested'      => '6.8',
+                'requires'    => '5.6',
             );
+
+            $transient->response[ $this->plugin_file ] = $item;
         }
 
         return $transient;
@@ -133,7 +150,11 @@ class SDS_GitHub_Updater {
      * Provide plugin info for the "View Details" popup.
      */
     public function plugin_info( $result, $action, $args ) {
-        if ( $action !== 'plugin_information' || $args->slug !== $this->slug ) {
+        if ( $action !== 'plugin_information' ) {
+            return $result;
+        }
+
+        if ( ! isset( $args->slug ) || $args->slug !== $this->slug ) {
             return $result;
         }
 
@@ -144,7 +165,17 @@ class SDS_GitHub_Updater {
             return $result;
         }
 
-        $info = (object) array(
+        $download_url = $release['zipball_url'];
+        if ( ! empty( $release['assets'] ) ) {
+            foreach ( $release['assets'] as $asset ) {
+                if ( substr( $asset['name'], -4 ) === '.zip' ) {
+                    $download_url = $asset['browser_download_url'];
+                    break;
+                }
+            }
+        }
+
+        return (object) array(
             'name'            => $plugin_data['Name'],
             'slug'            => $this->slug,
             'version'         => ltrim( $release['tag_name'], 'vV' ),
@@ -154,24 +185,13 @@ class SDS_GitHub_Updater {
             'tested'          => '6.8',
             'requires_php'    => '7.4',
             'downloaded'      => 0,
-            'last_updated'    => $release['published_at'],
+            'last_updated'    => isset( $release['published_at'] ) ? $release['published_at'] : '',
             'sections'        => array(
-                'description'  => $plugin_data['Description'],
-                'changelog'    => nl2br( esc_html( $release['body'] ) ),
+                'description' => $plugin_data['Description'],
+                'changelog'   => isset( $release['body'] ) ? nl2br( esc_html( $release['body'] ) ) : '',
             ),
-            'download_link'   => $release['zipball_url'],
+            'download_link'   => $download_url,
         );
-
-        if ( ! empty( $release['assets'] ) ) {
-            foreach ( $release['assets'] as $asset ) {
-                if ( substr( $asset['name'], -4 ) === '.zip' ) {
-                    $info->download_link = $asset['browser_download_url'];
-                    break;
-                }
-            }
-        }
-
-        return $info;
     }
 
     /**
@@ -185,12 +205,17 @@ class SDS_GitHub_Updater {
 
         global $wp_filesystem;
 
-        $plugin_dir = WP_PLUGIN_DIR . '/' . $this->slug;
-        $source     = $result['destination'];
+        $proper_destination = WP_PLUGIN_DIR . '/' . $this->slug;
+        $source             = $result['destination'];
 
-        // Move to correct directory name
-        $wp_filesystem->move( $source, $plugin_dir );
-        $result['destination'] = $plugin_dir;
+        // Only move if the source is different from the expected destination
+        if ( $source !== $proper_destination ) {
+            $wp_filesystem->move( $source, $proper_destination );
+            $result['destination'] = $proper_destination;
+        }
+
+        // Clear the release cache so next check picks up the new version
+        delete_transient( 'sds_github_release_' . md5( $this->github_repo ) );
 
         // Re-activate if it was active
         if ( is_plugin_active( $this->plugin_file ) ) {
