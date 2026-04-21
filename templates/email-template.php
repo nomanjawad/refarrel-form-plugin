@@ -32,7 +32,7 @@
             <table class="email-table">
                 <tr><td>Full Name</td><td><?php echo esc_html( $data['full_name'] ?? '' ); ?></td></tr>
                 <tr><td>Date of Birth</td><td><?php echo esc_html( $data['date_of_birth'] ?? '' ); ?></td></tr>
-                <tr><td>NDIS Number</td><td><?php echo esc_html( $data['ndis_number'] ?? '' ); ?></td></tr>
+                <tr><td>Gender / Sex</td><td><?php echo esc_html( $data['gender'] ?? '' ); ?></td></tr>
                 <tr><td>Phone</td><td><?php echo esc_html( $data['phone_number'] ?? '' ); ?></td></tr>
                 <tr><td>Email</td><td><?php echo esc_html( $data['email'] ?? '' ); ?></td></tr>
             </table>
@@ -63,11 +63,6 @@
                 }
                 ?>
             </p>
-        </div>
-
-        <div class="email-section">
-            <h3>Primary Disability</h3>
-            <p style="font-size: 14px;"><?php echo esc_html( $data['primary_disability'] ?? 'N/A' ); ?></p>
         </div>
 
         <p style="font-size: 14px; color: #666; margin-top: 20px;">

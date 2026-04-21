@@ -12,17 +12,6 @@
     </div>
 </div>
 
-<div class="sds-field-row sds-two-col">
-    <div class="sds-field">
-        <label for="sds_plan_start">Plan Start Date <span class="required">*</span></label>
-        <input type="date" id="sds_plan_start" name="plan_start_date" required />
-    </div>
-    <div class="sds-field">
-        <label for="sds_plan_end">Plan End Date <span class="required">*</span></label>
-        <input type="date" id="sds_plan_end" name="plan_end_date" required />
-    </div>
-</div>
-
 <div class="sds-field-row">
     <div class="sds-field">
         <label for="sds_plan_manager">Plan Manager (if applicable)</label>

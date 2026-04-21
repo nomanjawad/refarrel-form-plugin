@@ -11,11 +11,23 @@
 <div class="sds-field-row sds-two-col">
     <div class="sds-field">
         <label for="sds_dob">Date of Birth <span class="required">*</span></label>
-        <input type="date" id="sds_dob" name="date_of_birth" required />
+        <div class="sds-dob-wrap">
+            <input type="text" id="sds_dob" name="date_of_birth" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" maxlength="10" inputmode="numeric" required autocomplete="bday" />
+            <input type="date" id="sds_dob_picker" class="sds-dob-picker" tabindex="-1" aria-hidden="true" />
+            <button type="button" class="sds-dob-btn" id="sds_dob_btn" aria-label="Open calendar">
+                <span class="dashicons dashicons-calendar-alt"></span>
+            </button>
+        </div>
+        <small class="sds-field-hint">Type DD/MM/YYYY or use the calendar</small>
     </div>
     <div class="sds-field">
-        <label for="sds_ndis_number">NDIS Number <span class="required">*</span></label>
-        <input type="text" id="sds_ndis_number" name="ndis_number" required />
+        <label>Gender / Sex <span class="required">*</span></label>
+        <div class="sds-radio-group">
+            <label class="sds-radio"><input type="radio" name="gender" value="Male" required /> Male</label>
+            <label class="sds-radio"><input type="radio" name="gender" value="Female" /> Female</label>
+            <label class="sds-radio"><input type="radio" name="gender" value="Other" /> Other</label>
+            <label class="sds-radio"><input type="radio" name="gender" value="Prefer not to say" /> Prefer not to say</label>
+        </div>
     </div>
 </div>
 

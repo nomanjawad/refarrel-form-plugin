@@ -175,6 +175,62 @@
     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
 }
 
+/* DOB wrapper with calendar button */
+.sds-dob-wrap {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.sds-dob-wrap input[type="text"] {
+    padding-right: 44px;
+}
+
+.sds-dob-picker {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    right: 0;
+    bottom: 0;
+}
+
+.sds-dob-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--sds-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.sds-dob-btn:hover {
+    background: var(--sds-primary-light);
+}
+
+.sds-dob-btn .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.sds-field-hint {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+}
+
 .sds-field-error {
     color: var(--sds-error);
     font-size: 12px;

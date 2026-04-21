@@ -87,13 +87,11 @@ class SDS_Form_Handler {
 
         // Text fields
         $text_fields = array(
-            'full_name', 'ndis_number', 'address', 'phone_number',
+            'full_name', 'gender', 'address', 'phone_number',
             'referred_by', 'referrer_contact_number', 'relationship_to_participant',
             'rep_name', 'rep_relationship', 'rep_contact_number',
             'plan_type', 'plan_manager', 'plan_manager_contact',
             'service_other_text',
-            'primary_disability', 'additional_conditions', 'mobility_requirements',
-            'communication_needs', 'behavioural_support_needs', 'allergies_risks',
             'consent_name',
         );
 
@@ -107,8 +105,20 @@ class SDS_Form_Handler {
             $data[ $field ] = isset( $post[ $field ] ) ? sanitize_email( wp_unslash( $post[ $field ] ) ) : '';
         }
 
-        // Date fields - validate format
-        $date_fields = array( 'date_of_birth', 'referral_date', 'plan_start_date', 'plan_end_date', 'consent_date' );
+        // Date of Birth - accepts DD/MM/YYYY, converts to YYYY-MM-DD
+        $dob_raw = isset( $post['date_of_birth'] ) ? sanitize_text_field( wp_unslash( $post['date_of_birth'] ) ) : '';
+        $data['date_of_birth'] = '';
+        if ( $dob_raw && preg_match( '#^(\d{2})/(\d{2})/(\d{4})$#', $dob_raw, $m ) ) {
+            $day = (int) $m[1]; $mon = (int) $m[2]; $year = (int) $m[3];
+            if ( checkdate( $mon, $day, $year ) ) {
+                $data['date_of_birth'] = sprintf( '%04d-%02d-%02d', $year, $mon, $day );
+            }
+        } elseif ( $dob_raw && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $dob_raw ) ) {
+            $data['date_of_birth'] = $dob_raw;
+        }
+
+        // Other date fields - expect YYYY-MM-DD
+        $date_fields = array( 'referral_date', 'consent_date' );
         foreach ( $date_fields as $field ) {
             $val = isset( $post[ $field ] ) ? sanitize_text_field( wp_unslash( $post[ $field ] ) ) : '';
             if ( $val && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $val ) ) {
@@ -176,8 +186,8 @@ class SDS_Form_Handler {
         if ( empty( $data['date_of_birth'] ) ) {
             $errors[] = 'Date of Birth';
         }
-        if ( empty( $data['ndis_number'] ) ) {
-            $errors[] = 'NDIS Number';
+        if ( empty( $data['gender'] ) ) {
+            $errors[] = 'Gender';
         }
         if ( empty( $data['address'] ) ) {
             $errors[] = 'Address';
@@ -196,15 +206,6 @@ class SDS_Form_Handler {
         }
         if ( empty( $data['plan_type'] ) ) {
             $errors[] = 'Plan Type';
-        }
-        if ( empty( $data['plan_start_date'] ) ) {
-            $errors[] = 'Plan Start Date';
-        }
-        if ( empty( $data['plan_end_date'] ) ) {
-            $errors[] = 'Plan End Date';
-        }
-        if ( empty( $data['primary_disability'] ) ) {
-            $errors[] = 'Primary Disability';
         }
         if ( empty( $data['consent_name'] ) ) {
             $errors[] = 'Consent Name';

@@ -29,8 +29,7 @@ class SDS_Form {
                 <div class="sds-progress-step" data-step="4"><span class="sds-step-num">4</span><span class="sds-step-label">NDIS Plan</span></div>
                 <div class="sds-progress-step" data-step="5"><span class="sds-step-num">5</span><span class="sds-step-label">Services</span></div>
                 <div class="sds-progress-step" data-step="6"><span class="sds-step-num">6</span><span class="sds-step-label">Goals</span></div>
-                <div class="sds-progress-step" data-step="7"><span class="sds-step-num">7</span><span class="sds-step-label">Medical</span></div>
-                <div class="sds-progress-step" data-step="8"><span class="sds-step-num">8</span><span class="sds-step-label">Consent</span></div>
+                <div class="sds-progress-step" data-step="7"><span class="sds-step-num">7</span><span class="sds-step-label">Consent</span></div>
             </div>
 
             <form id="sds-referral-form" novalidate>
@@ -38,7 +37,7 @@ class SDS_Form {
                 <input type="hidden" name="action" value="sds_submit_form" />
 
                 <?php
-                for ( $i = 1; $i <= 8; $i++ ) {
+                for ( $i = 1; $i <= 7; $i++ ) {
                     $display = ( $i === 1 ) ? '' : 'style="display:none;"';
                     echo '<div class="sds-step" data-step="' . $i . '" ' . $display . '>';
                     include SDS_PLUGIN_DIR . 'templates/form-step-' . $i . '.php';

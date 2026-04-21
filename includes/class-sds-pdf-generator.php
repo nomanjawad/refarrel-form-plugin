@@ -69,7 +69,7 @@ class SDS_PDF_Generator {
         $this->draw_section( $pdf, $font, $rgb, '1. Participant Details', array(
             'Full Name'                => $this->get_data( 'full_name' ),
             'Date of Birth'            => $this->format_date( $this->get_data( 'date_of_birth' ) ),
-            'NDIS Number'              => $this->get_data( 'ndis_number' ),
+            'Gender / Sex'             => $this->get_data( 'gender' ),
             'Address'                  => $this->get_data( 'address' ),
             'Phone Number'             => $this->get_data( 'phone_number' ),
             'Email'                    => $this->get_data( 'email' ),
@@ -102,11 +102,9 @@ class SDS_PDF_Generator {
 
         // Section 4: NDIS Plan Details
         $this->draw_section( $pdf, $font, $rgb, '4. NDIS Plan Details', array(
-            'Plan Type'                  => $this->get_data( 'plan_type' ),
-            'Plan Start Date'            => $this->format_date( $this->get_data( 'plan_start_date' ) ),
-            'Plan End Date'              => $this->format_date( $this->get_data( 'plan_end_date' ) ),
-            'Plan Manager'               => $this->get_data( 'plan_manager' ),
-            'Plan Manager Contact'       => $this->get_data( 'plan_manager_contact' ),
+            'Plan Type'            => $this->get_data( 'plan_type' ),
+            'Plan Manager'         => $this->get_data( 'plan_manager' ),
+            'Plan Manager Contact' => $this->get_data( 'plan_manager_contact' ),
         ) );
 
         // Section 5: Services Requested
@@ -138,19 +136,9 @@ class SDS_PDF_Generator {
         $pdf->MultiCell( 0, 6, $this->get_data( 'participant_goals' ) ?: 'N/A', 0, 'L' );
         $pdf->Ln( 4 );
 
-        // Section 7: Medical & Support Information
-        $this->draw_section( $pdf, $font, $rgb, '7. Medical & Support Information', array(
-            'Primary Disability'        => $this->get_data( 'primary_disability' ),
-            'Additional Conditions'     => $this->get_data( 'additional_conditions' ),
-            'Mobility Requirements'     => $this->get_data( 'mobility_requirements' ),
-            'Communication Needs'       => $this->get_data( 'communication_needs' ),
-            'Behavioural Support Needs' => $this->get_data( 'behavioural_support_needs' ),
-            'Allergies / Risks'         => $this->get_data( 'allergies_risks' ),
-        ) );
-
-        // Section 8: Consent & Privacy
+        // Section 7: Consent & Privacy
         $this->check_page_space( $pdf, 80, $rgb, $font );
-        $this->draw_section_title( $pdf, $font, $rgb, '8. Consent & Privacy' );
+        $this->draw_section_title( $pdf, $font, $rgb, '7. Consent & Privacy' );
 
         $pdf->SetFont( $font, 'I', 9 );
         $pdf->MultiCell( 0, 6, 'I consent to Sydney Disability Support Pty Ltd collecting and using my information to process this referral.', 0, 'L' );

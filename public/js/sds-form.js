@@ -2,7 +2,7 @@
     'use strict';
 
     var currentStep = 1;
-    var totalSteps = 8;
+    var totalSteps = 7;
     var signaturePad = null;
 
     $(document).ready(function() {
@@ -12,6 +12,7 @@
         bindNewReferral();
         setDefaultDates();
         bindDateFields();
+        bindDobField();
     });
 
     function setDefaultDates() {
@@ -100,12 +101,7 @@
         // Hide current step
         $('.sds-step[data-step="' + currentStep + '"]').fadeOut(200, function() {
             // Show target step
-            $('.sds-step[data-step="' + step + '"]').fadeIn(200, function() {
-                // Initialize signature pad when step 8 becomes visible
-                if (step === 8) {
-                    initSignaturePad();
-                }
-            });
+            $('.sds-step[data-step="' + step + '"]').fadeIn(200);
         });
 
         // Update progress bar
@@ -334,9 +330,48 @@
 
     function bindDateFields() {
         // Open native date picker when clicking anywhere on the field
-        $(document).on('click', '#sds-referral-form input[type="date"]', function() {
+        $(document).on('click', '#sds-referral-form input[type="date"]:not(.sds-dob-picker)', function() {
             if (typeof this.showPicker === 'function') {
                 try { this.showPicker(); } catch(e) {}
+            }
+        });
+    }
+
+    function bindDobField() {
+        var $dob = $('#sds_dob');
+        var $picker = $('#sds_dob_picker');
+        var $btn = $('#sds_dob_btn');
+
+        // Auto-format DOB as DD/MM/YYYY
+        $dob.on('input', function() {
+            var v = this.value.replace(/\D/g, '').substring(0, 8);
+            var formatted = '';
+            if (v.length > 0) formatted = v.substring(0, 2);
+            if (v.length >= 3) formatted += '/' + v.substring(2, 4);
+            if (v.length >= 5) formatted += '/' + v.substring(4, 8);
+            this.value = formatted;
+        });
+
+        // Calendar button opens hidden date picker
+        $btn.on('click', function() {
+            var picker = $picker[0];
+            if (typeof picker.showPicker === 'function') {
+                try { picker.showPicker(); } catch(e) {
+                    picker.focus();
+                }
+            } else {
+                picker.focus();
+            }
+        });
+
+        // Sync picker -> text input (convert YYYY-MM-DD to DD/MM/YYYY)
+        $picker.on('change', function() {
+            if (this.value) {
+                var parts = this.value.split('-');
+                if (parts.length === 3) {
+                    $dob.val(parts[2] + '/' + parts[1] + '/' + parts[0]);
+                    $dob.removeClass('sds-invalid');
+                }
             }
         });
     }
