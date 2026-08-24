@@ -22,7 +22,7 @@ class SDS_Email_Sender {
         $from_email = $this->normalize_email( $this->get_option( 'from_email', get_option( 'admin_email' ) ) );
         $from_name  = $this->get_option( 'from_name', 'Sydney Disability Support' );
 
-        $admin_recipients = $this->get_admin_recipients();
+        $admin_recipients  = $this->get_admin_recipients();
         $participant_email = $this->normalize_email( isset( $form_data['email'] ) ? $form_data['email'] : '' );
 
         $participant_name = isset( $form_data['full_name'] ) ? $form_data['full_name'] : 'Unknown';
@@ -37,43 +37,43 @@ class SDS_Email_Sender {
             $attachments[] = $pdf_path;
         }
 
-        $headers = $this->get_mail_headers( $from_email, $from_name );
+        $from_filter = function( $email ) use ( $from_email ) {
+            return $from_email ? $from_email : $email;
+        };
+        $name_filter = function( $name ) use ( $from_name ) {
+            return $from_name ? $from_name : $name;
+        };
+        $content_type_filter = function() {
+            return 'text/html';
+        };
+
+        add_filter( 'wp_mail_from', $from_filter );
+        add_filter( 'wp_mail_from_name', $name_filter );
+        add_filter( 'wp_mail_content_type', $content_type_filter );
 
         $sent = false;
 
-        if ( ! empty( $admin_recipients ) ) {
-            $result = wp_mail(
-                implode( ',', $admin_recipients ),
-                $admin_subject,
-                $admin_body,
-                $headers,
-                $attachments
-            );
-
+        foreach ( $admin_recipients as $admin_email ) {
+            $result = wp_mail( $admin_email, $admin_subject, $admin_body, array(), $attachments );
             if ( $result ) {
                 $sent = true;
             } else {
-                $this->log_mail_failure( 'admin notification', $admin_recipients );
+                $this->log_mail_failure( 'admin notification', array( $admin_email ) );
             }
-        } else {
-            $this->log_mail_failure( 'admin notification', array( 'No valid admin recipients configured in plugin settings.' ) );
         }
 
         if ( $participant_email && ! in_array( $participant_email, $admin_recipients, true ) ) {
-            $result = wp_mail(
-                $participant_email,
-                $participant_subject,
-                $participant_body,
-                $headers,
-                $attachments
-            );
-
+            $result = wp_mail( $participant_email, $participant_subject, $participant_body, array(), $attachments );
             if ( $result ) {
                 $sent = true;
             } else {
                 $this->log_mail_failure( 'participant confirmation', array( $participant_email ) );
             }
         }
+
+        remove_filter( 'wp_mail_from', $from_filter );
+        remove_filter( 'wp_mail_from_name', $name_filter );
+        remove_filter( 'wp_mail_content_type', $content_type_filter );
 
         return $sent;
     }
@@ -99,26 +99,6 @@ class SDS_Email_Sender {
         }
 
         return array_values( array_unique( $recipients ) );
-    }
-
-    /**
-     * Build standard wp_mail headers for HTML messages.
-     *
-     * @param string $from_email From email address.
-     * @param string $from_name  From name.
-     * @return array
-     */
-    private function get_mail_headers( $from_email, $from_name ) {
-        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-
-        if ( $from_email && is_email( $from_email ) ) {
-            $from_header = $from_name
-                ? sprintf( 'From: %s <%s>', $from_name, $from_email )
-                : sprintf( 'From: %s', $from_email );
-            $headers[] = $from_header;
-        }
-
-        return $headers;
     }
 
     private function build_email_body( $form_data ) {
