@@ -66,10 +66,10 @@ class SDS_Admin_Settings {
             'type'  => 'email',
             'desc'  => 'Admin will receive referral notifications at this email.',
         ) );
-        add_settings_field( 'recipient_email', 'Recipient Email', array( $this, 'field_text' ), 'sds-referral-settings', 'sds_email_section', array(
+        add_settings_field( 'recipient_email', 'Additional Notification Email', array( $this, 'field_text' ), 'sds-referral-settings', 'sds_email_section', array(
             'field' => 'recipient_email',
             'type'  => 'email',
-            'desc'  => 'Additional recipient for referral notifications (e.g., intake coordinator).',
+            'desc'  => 'Optional second admin notification address (e.g., intake coordinator). The participant also receives a confirmation if they enter an email on the form.',
         ) );
 
         // Form Appearance Section
